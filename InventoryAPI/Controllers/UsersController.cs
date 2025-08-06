@@ -23,5 +23,12 @@ namespace InventoryAPI.Controllers
 
             return Ok(allUsers);
         }
+
+        [HttpPost]
+        public IActionResult AddUser()
+        {
+
+        }
+
     }
 }
