@@ -1,4 +1,6 @@
 ﻿using InventoryAPI.Data;
+using InventoryAPI.Models;
+using InventoryAPI.Models.Entities;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,9 +27,19 @@ namespace InventoryAPI.Controllers
         }
 
         [HttpPost]
-        public IActionResult AddUser()
+        public IActionResult AddUser(AddUserDto addUserDto)
         {
+            var userEntity = new User()
+            {
+                Username = addUserDto.Username,
+                Password = addUserDto.Password,
+                Level = addUserDto.Level
+            };
 
+            dbContext.Users.Add(userEntity);
+            dbContext.SaveChanges();
+
+            return Ok(userEntity);
         }
 
     }
