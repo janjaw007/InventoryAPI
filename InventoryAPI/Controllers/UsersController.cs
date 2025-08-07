@@ -55,6 +55,40 @@ namespace InventoryAPI.Controllers
             return Ok(userEntity);
         }
 
+        [HttpPut]
+        [Route("{id:guid}")]
+        public IActionResult UpdateUser(Guid id, UpdateUserDto updateUserDto)
+        {
+            var user = dbContext.Users.Find(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.Password = updateUserDto.Password;
+            user.Level = updateUserDto.Level;
+
+            dbContext.SaveChanges();
+            return Ok(user);
+
+        }
+
+        [HttpDelete]
+        [Route("{id:guid}")]
+        public IActionResult DeleteUser(Guid id)
+        {
+           var user = dbContext.Users.Find(id);
+
+            if(user == null)
+            {
+                return NotFound();  
+            }
+
+            dbContext.Users.Remove(user);
+            dbContext.SaveChanges();
+            return Ok(user);
+        }
+
 
 
     }
