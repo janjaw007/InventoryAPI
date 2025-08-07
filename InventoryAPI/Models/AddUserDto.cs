@@ -1,6 +1,6 @@
-﻿namespace InventoryAPI.Models.Entities
+﻿namespace InventoryAPI.Models
 {
-    public class User
+    public class AddUserDto
     {
         public Guid Id { get; set; }
         public required string Username { get; set; }
