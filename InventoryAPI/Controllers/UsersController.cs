@@ -26,6 +26,19 @@ namespace InventoryAPI.Controllers
             return Ok(allUsers);
         }
 
+        [HttpGet]
+        [Route("{id:guid}")]
+        public IActionResult GetUserById(Guid id)
+        {
+          var user =  dbContext.Users.Find(id);
+            if(user == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(user);
+        }
+
         [HttpPost]
         public IActionResult AddUser(AddUserDto addUserDto)
         {
@@ -41,6 +54,8 @@ namespace InventoryAPI.Controllers
 
             return Ok(userEntity);
         }
+
+
 
     }
 }
