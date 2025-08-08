@@ -66,7 +66,10 @@ namespace InventoryAPI.Controllers
             }
 
             user.Password = updateUserDto.Password;
-            user.Level = updateUserDto.Level;
+            if (updateUserDto.Level.HasValue)
+            {
+                user.Level = updateUserDto.Level.Value;
+            }
 
             dbContext.SaveChanges();
             return Ok(user);
