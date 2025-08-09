@@ -2,6 +2,7 @@
 using InventoryAPI.Models;
 using InventoryAPI.Models.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InventoryAPI.Controllers
@@ -12,11 +13,13 @@ namespace InventoryAPI.Controllers
     public class UsersController : ControllerBase
     {
         private readonly ApplicationDbContext dbContext;
+        private readonly IPasswordHasher<User> passwordHasher;
 
         //contect to db using dbcontext through constructor injection
-        public UsersController(ApplicationDbContext dbContext)
+        public UsersController(ApplicationDbContext dbContext, IPasswordHasher<User> passwordHasher)
         {
             this.dbContext = dbContext;
+            this.passwordHasher = passwordHasher;
         }
         [HttpGet]
         public IActionResult GetAllUsers()
@@ -42,17 +45,21 @@ namespace InventoryAPI.Controllers
         [HttpPost]
         public IActionResult AddUser(AddUserDto addUserDto)
         {
+           
             var userEntity = new User()
             {
                 Username = addUserDto.Username,
-                Password = addUserDto.Password,
+                Password = "",
                 Level = addUserDto.Level
             };
+
+            string passwordhassed = passwordHasher.HashPassword(userEntity, addUserDto.Password);
+            userEntity.Password = passwordhassed;
 
             dbContext.Users.Add(userEntity);
             dbContext.SaveChanges();
 
-            return Ok(userEntity);
+            return Ok(new {userEntity.Id,userEntity.Username, userEntity.Level});
         }
 
         [HttpPut]
@@ -65,14 +72,19 @@ namespace InventoryAPI.Controllers
                 return NotFound();
             }
 
-            user.Password = updateUserDto.Password;
+
+            if (!string.IsNullOrEmpty(updateUserDto.Password))
+            {
+                string passwordHassed = passwordHasher.HashPassword(user, updateUserDto.Password);
+                user.Password = passwordHassed;
+            }
             if (updateUserDto.Level.HasValue)
             {
                 user.Level = updateUserDto.Level.Value;
             }
 
             dbContext.SaveChanges();
-            return Ok(user);
+            return Ok(new {user.Id});
 
         }
 
@@ -94,5 +106,9 @@ namespace InventoryAPI.Controllers
 
 
 
+    }
+
+    internal interface IPasswordHasher
+    {
     }
 }
